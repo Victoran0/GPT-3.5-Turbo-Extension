@@ -1,0 +1,14 @@
+{
+    "name": "GPT 3.5 Turbo",
+    "manifest_version": 3,
+    "permissions": ["storage"],
+    "version": "1.0",
+    "description": "Using openAI's chatGPT from a chrome extension, without signing up on their website.",
+    "background": {
+        "service_worker": "background.js"
+    },
+    "action": {
+        "default_popup": "index.html",
+        "default_title": "GPT 3.5 Turbo"
+    }
+}
