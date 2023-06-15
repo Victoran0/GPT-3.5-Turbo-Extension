@@ -1,23 +1,20 @@
-const API_KEY = 'hidden'
+const API_KEY = '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'
 const submitBtn = document.getElementById('submit')
 const output = document.getElementById('output')
 const input = document.querySelector('input')
 const history = document.querySelector('.history')
 const newChat = document.querySelector('button')
-const histories = {}
+let histories = {}
 
 const getHistories = async () => {
     let obj = {}
-    await chrome.storage.local.get(['histories']).then((result) => {
+    await chrome.storage.local.get(['key']).then((result) => {
         if (result.key) {
             obj = JSON.parse(result.key)
         }
     });
     return obj;
 }
-
-
-
 
 async function getMessage() {
     const options =  {
@@ -31,22 +28,20 @@ async function getMessage() {
             messages: [{role: "user", content: input.value}],
             max_tokens: 100
         })
-
     }
     try {
         const response = await fetch('https://api.openai.com/v1/chat/completions', options)
         const data = await response.json()
-        console.log(data)
         output.textContent = data.choices[0].message.content
-        if (data.choices[0].message.content && input.value) {
+        if (input.value && data && data.choices[0].message.content) {
             const pElement = document.createElement('p')
             pElement.textContent = input.value
             history.append(pElement)
             histories[input.value] = output.textContent
-            chrome.storage.sync.set({histories: JSON.stringify(histories)})
-            console.log('histories:', histories)
+            chrome.storage.local.set({key: JSON.stringify(histories)}).then(() => console.log('sent to storage:', histories))
         }
     } catch (error) {
+        output.textContent = error
         console.log(error)
     }
 }
@@ -59,19 +54,20 @@ newChat.addEventListener('click', () => {
     output.textContent = ''
 })
 
-history.innerHTML =
-    Object.keys(histories).map((ele, id) => {
-        `
-            <p id="${id}"> ${ele.input} </p>
-        `
+getHistories().then((result) => {
+    Object.keys(result).map((ele) => {
+        history.innerHTML += `<p> ${ele} </p>`
     })
-
-history.addEventListener('click', (e) => {
-    console.log(e.target)
-    input.value = e.target.textContent
-    output.textContent = histories[e.target.textContent]
+    console.log('result array:', Object.keys(result))
+    console.log('history:', history)
 })
 
-// pElement.addEventListener('click', () => {
-//     input.value = pElement.textContent
-// })
+// check out to know if the full section is not clicked
+
+history.addEventListener('click', (e) => {
+    if (!e.target.includes('class="history"')) {
+        input.value = e.target.textContent
+        output.textContent = histories[e.target.textContent]
+    }
+    console.log(e.target)
+})
