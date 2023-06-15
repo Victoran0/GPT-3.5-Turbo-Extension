@@ -1,4 +1,4 @@
-const API_KEY = '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'
+const API_KEY = 'hidden'
 const submitBtn = document.getElementById('submit')
 const output = document.getElementById('output')
 const input = document.querySelector('input')
