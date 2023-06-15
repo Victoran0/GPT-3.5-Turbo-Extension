@@ -42,7 +42,6 @@ async function getMessage() {
         }
     } catch (error) {
         output.textContent = error
-        console.log(error)
     }
 }
 
@@ -58,16 +57,13 @@ getHistories().then((result) => {
     Object.keys(result).map((ele) => {
         history.innerHTML += `<p> ${ele} </p>`
     })
-    console.log('result array:', Object.keys(result))
-    console.log('history:', history)
 })
 
-// check out to know if the full section is not clicked
-
 history.addEventListener('click', (e) => {
-    if (!e.target.includes('class="history"')) {
+    if (e.target.tagName !== 'DIV') {
         input.value = e.target.textContent
-        output.textContent = histories[e.target.textContent]
+        getHistories().then((result) => {
+            output.textContent = result[e.target.textContent.trim()]
+        })
     }
-    console.log(e.target)
 })
